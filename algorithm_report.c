@@ -154,7 +154,7 @@ void ShowData(S_DATA *ap_data, unsigned int a_count)
     var = Ssum/10;
  
     printf("-----------------------------------------------------------------------\n");
-    printf(" 분산     : %.2lf\n 표준편차 : %.2lf\n", var, sqrt(var));
+    printf(" ※ 분산     : %.2lf\n ※ 표준편차 : %.2lf\n", var, sqrt(var));
     printf("-----------------------------------------------------------------------\n");
     // 읽어들인 정보가 1명 이상인 경우에는 인원수와 전체 평균을 출력한다.			
 }
@@ -178,7 +178,7 @@ void SaveData(const char *ap_file_name, S_DATA *ap_data, unsigned int a_count)
         }
     
 		fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
-    	fprintf(p_file, " 분산 : %.2lf\n 표준편차 : %.2lf\n", var, sqrt(var));
+    	fprintf(p_file, " ※ 분산       :   %.2lf\n ※ 표준편차 :   %.2lf\n", var, sqrt(var));
       	fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
         fclose(p_file);  // 파일을 닫는다.
     }
@@ -194,10 +194,19 @@ int main()
     // 'data.csv' 파일에서 학생 정보를 읽어 들인다.
     
     if (ReadData("sungjuk.csv", data, &data_count))
-    { 
+    { 	
+    	 printf("\n\n [   OPEN sungjuk.csv   ] \n\n");
      	 ShowData(data, data_count);
     	 SaveData("Trans.csv", data, data_count);
 	}
+	
+	if (ReadData("sungjuk.txt", data, &data_count))
+	{	
+		 printf("\n\n [   OPEN sungjuk.txt   ] \n\n");
+		 ShowData(data, data_count);
+    	 SaveData("Trans.txt", data, data_count);
+	}
+
 
     return 0;
 }
