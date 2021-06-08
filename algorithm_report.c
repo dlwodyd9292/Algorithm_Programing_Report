@@ -11,10 +11,10 @@ typedef struct StudentData  // 학생 1명의 정보를 저장할 구조체 선�
     char name[MAX_NAME_LEN];  // 이름
     unsigned int kor, eng, math; 
  	unsigned int sci, eth;
-	unsigned int total, avg, rank; // 국어, 영어, 수학, 과학, 윤리, 총점, 평균, 석차 
+	unsigned int total, rank; // 국어, 영어, 수학, 과학, 윤리, 총점, 평균, 석차 
 } S_DATA;
  
-float variane, stdev;
+static double var_sum = 0, Ssum = 0, mean, var;
  
 // ap_src_str 문자열에서 a_delimiter 또는 NULL 문자가 나올때까지 ap_buffer 메모리에
 // 문자열을 복사한다. 예를들어, ap_src_str에 "abc,def"라고 들어있고 a_delimiter에
@@ -55,6 +55,7 @@ int ReadData(const char *ap_file_name, S_DATA *ap_data, unsigned int *ap_data_co
         // 파일에서 한 줄의 정보를 읽어서 저장할 변수와 
         // 쉼표를 기준으로 분리한 문자열을 저장할 변수
         char one_line_string[1024], str[512], *p_pos;
+        
         // 파일에서 한 줄의 데이터를 읽는다. 
         // 하지만 첫 줄은 타이틀 정보라서 처리하지 않고 넘어간다.
         if (NULL != fgets(one_line_string, 1024, p_file)) 
@@ -79,7 +80,7 @@ int ReadData(const char *ap_file_name, S_DATA *ap_data, unsigned int *ap_data_co
                 // 개인별 과목 점수를 합산한다.
                 ap_data->total = ap_data->kor + ap_data->eng + ap_data->math + ap_data->sci + ap_data->eth;
                 ap_data++; // 다음 저장 위치로 이동한다.
-            }
+            }	           
             // 데이터를 저장한 배열의 시작 주소를 입력이 진행된 주소에 빼면 
             // 입력된 데이터의 개수를 얻을 수 있다.
             *ap_data_count = ap_data - p_start;
@@ -94,21 +95,27 @@ int ReadData(const char *ap_file_name, S_DATA *ap_data, unsigned int *ap_data_co
 void ShowData(S_DATA *ap_data, unsigned int a_count)
 {
     printf("-----------------------------------------------------------------------\n");
-    printf(" 학번    이름    국어  영어  수학  과학  윤리  총점   평균     석차\n");
+    printf(" 학번    이름    국어  영어  수학  과학  윤리  총점  평균   석차\n");
     printf("-----------------------------------------------------------------------\n");
  
     unsigned int sum = 0; // 학급 전체 평균을 계산하기 위해
     unsigned int i = 0; 
        
-	for(i = 0; i < a_count; i++, ap_data++){
+	for(i = 0; i < a_count; i++, ap_data++)
+	{
         // 학생별로 성적을 출력한다.
         printf("  %-4u  %5s   %3u   %3u   %3u   %3u   %3u   %3u   %3u   %3d\n", 
             ap_data->num, ap_data->name, ap_data->kor, ap_data->eng, ap_data->math, 
             ap_data->sci, ap_data->eth, ap_data->total, ((ap_data->total)/5), ap_data->rank);
         sum += ap_data->total; // 학생의 총점을 합산한다.
+    	
+		mean = sum / a_count;
+    	Ssum += ((ap_data->total/5) - mean)*((ap_data->total/5)- mean);
+    	var= sum/9;    
     }
+             	
     printf("-----------------------------------------------------------------------\n");
-    printf("				분산 : %f  표준편차 : %f\n", variane, stdev);
+    printf("	분산 : %lf  표준편차 : %lf\n", var, sqrt(var));
     printf("-----------------------------------------------------------------------\n");
     // 읽어들인 정보가 1명 이상인 경우에는 인원수와 전체 평균을 출력한다.
 }
@@ -118,23 +125,25 @@ void SaveData(const char *ap_file_name, S_DATA *ap_data, unsigned int a_count)
     FILE *p_file = NULL;  // 파일을 열어서 사용할 파일 포인터!
     // fopen_s 함수를 사용하여 파일을 텍스트 형식의 쓰기 모드로 연다!
     // 이 함수는 파일 열기에 성공했다면 0을 반환한다.
-    if (0 == fopen_s(&p_file, ap_file_name, "wt")) {
+    if (0 == fopen_s(&p_file, ap_file_name, "wt")) 
+	{
         // 첫 줄에 타이틀 정보를 저장한다.
         fprintf(p_file, "학번,성명,국어,영어,수학,과학,윤리,총점,평균,석차\n");
         // 학생의 수만큼 정보를 저장한다.
         unsigned int i = 0;
-        for (i = 0; i < a_count; i++, ap_data++) {
+        for (i = 0; i < a_count; i++, ap_data++) 
+		{
             fprintf(p_file, "%-4d,%5s,%3u,%3u,%3u,%3u,%3u,%3u,%3u,%3u\n", ap_data->num, ap_data->name, 
         ap_data->kor, ap_data->eng, ap_data->math, ap_data->sci, ap_data->eth, ap_data->total,
 		((ap_data->total)/5), ap_data->rank);
         }
-    	fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
-    	fprintf(p_file, "				분산 : %f  표준편차 : %f\n", variane, stdev);
+    
+		fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
+    	fprintf(p_file, "  분산 : %lf 표준편차 : %lf\n", var, sqrt(var));
       	fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
-      	
-		printf("%s 파일에 데이터를 저장했습니다!\n", ap_file_name);
         fclose(p_file);  // 파일을 닫는다.
     }
+    printf("%s 파일에 데이터를 저장했습니다!\n", ap_file_name);
 }
  
 int main()
@@ -147,12 +156,13 @@ int main()
     if (ReadData("sungjuk.csv", data, &data_count)) {
         // 사용자가 4를 입력할 때까지 계속 반복한다.
         while (select != 3) {
-            printf("\n\n==========[  메뉴  ]==========\n"); // 메뉴를 출력한다.
-            printf("1.sungjuk.csv 파일 열기\n");
-            printf("2.Trans.csv에 저장\n");
-            printf("3.프로그램 종료\n");
- 
-            printf("선택 : ");
+        	printf("\n========================\n");
+            printf("\n1.sungjuk.csv 파일 열기\n");
+            printf("\n2.Trans.csv에 저장\n");
+            printf("\n3.프로그램 종료\n");
+ 			printf("\n========================\n");
+ 					  
+            printf("\n\n선택 : ");
             // 잘못된 입력에 대해서 체크한다.
             if (1 == scanf_s("%u", &select)) {
                 printf("\n\n");
