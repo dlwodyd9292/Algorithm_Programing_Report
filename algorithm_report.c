@@ -115,7 +115,7 @@ void ShowData(S_DATA *ap_data, unsigned int a_count)
     }
              	
     printf("-----------------------------------------------------------------------\n");
-    printf("	분산 : %lf  표준편차 : %lf\n", var, sqrt(var));
+    printf("	분산 : %.2lf  표준편차 : %.2lf\n", var, sqrt(var));
     printf("-----------------------------------------------------------------------\n");
     // 읽어들인 정보가 1명 이상인 경우에는 인원수와 전체 평균을 출력한다.
 }
@@ -139,11 +139,11 @@ void SaveData(const char *ap_file_name, S_DATA *ap_data, unsigned int a_count)
         }
     
 		fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
-    	fprintf(p_file, "  분산 : %lf 표준편차 : %lf\n", var, sqrt(var));
+    	fprintf(p_file, "  분산 : %.2lf    표준편차 : %.2lf\n", var, sqrt(var));
       	fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
         fclose(p_file);  // 파일을 닫는다.
     }
-    printf("%s 파일에 데이터를 저장했습니다!\n", ap_file_name);
+    printf("\n\n%s 파일에 데이터를 저장했습니다!\n", ap_file_name);
 }
  
 int main()
@@ -153,30 +153,12 @@ int main()
     unsigned int data_count = 0, select = 0;  
  
     // 'data.csv' 파일에서 학생 정보를 읽어 들인다.
-    if (ReadData("sungjuk.csv", data, &data_count)) {
-        // 사용자가 4를 입력할 때까지 계속 반복한다.
-        while (select != 3) {
-        	printf("\n========================\n");
-            printf("\n1.sungjuk.csv 파일 열기\n");
-            printf("\n2.Trans.csv에 저장\n");
-            printf("\n3.프로그램 종료\n");
- 			printf("\n========================\n");
- 					  
-            printf("\n\n선택 : ");
-            // 잘못된 입력에 대해서 체크한다.
-            if (1 == scanf_s("%u", &select)) {
-                printf("\n\n");
-                // 기능별로 함수를 호출한다.
-                if (select == 1) ShowData(data, data_count);  // 성적 보기
-                else if (select == 2) SaveData("Trans.csv", data, data_count); // 저장               
-            } else {
-                // 잘못된 입력은 오류 메시지 출력 후에 표준입력 버퍼를 비운다.
-                printf("\n잘못된 값을 입력했습니다. 다시 입력하세요.\n\n");
-                rewind(stdin);
-            }
-        }
-    } else {
-        printf("sungjuk.csv 파일을 열수 없습니다. 파일 경로를 확인하세요!!\n");
-    }
+    
+    if (ReadData("sungjuk.csv", data, &data_count))
+    { 
+     	 ShowData(data, data_count);
+    	 SaveData("Trans.csv", data, data_count);
+	}
+
     return 0;
 }
