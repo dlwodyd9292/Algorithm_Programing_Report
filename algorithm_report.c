@@ -10,11 +10,18 @@ typedef struct StudentData  // 학생 1명의 정보를 저장할 구조체 선�
     int num;  // 학번
     char name[MAX_NAME_LEN];  // 이름
     unsigned int kor, eng, math; 
- 	unsigned int sci, eth;
-	unsigned int total, rank; // 국어, 영어, 수학, 과학, 윤리, 총점, 평균, 석차 
+ 	unsigned int sci, eth;// 국어, 영어, 수학, 과학, 윤리, 총점, 평균, 석차 
+	unsigned int total, rank;
 } S_DATA;
  
-static double var_sum = 0, Ssum = 0, mean, var;
+struct rank
+{
+	int total;
+	int rank;
+} for_rank[10];
+ 
+static double var_sum = 0, sum2 = 0, Ssum = 0, mean, var;
+int for_var[10];
  
 // ap_src_str 문자열에서 a_delimiter 또는 NULL 문자가 나올때까지 ap_buffer 메모리에
 // 문자열을 복사한다. 예를들어, ap_src_str에 "abc,def"라고 들어있고 a_delimiter에
@@ -79,7 +86,9 @@ int ReadData(const char *ap_file_name, S_DATA *ap_data, unsigned int *ap_data_co
  
                 // 개인별 과목 점수를 합산한다.
                 ap_data->total = ap_data->kor + ap_data->eng + ap_data->math + ap_data->sci + ap_data->eth;
-                ap_data++; // 다음 저장 위치로 이동한다.
+				
+				ap_data++; // 다음 저장 위치로 이동한다.
+                
             }	           
             // 데이터를 저장한 배열의 시작 주소를 입력이 진행된 주소에 빼면 
             // 입력된 데이터의 개수를 얻을 수 있다.
@@ -90,34 +99,64 @@ int ReadData(const char *ap_file_name, S_DATA *ap_data, unsigned int *ap_data_co
     }
     return 0;  // 파일에서 정보 읽기 실패
 }
- 
+
 // 읽어들인 학생 성적을 모두 출력한다.
 void ShowData(S_DATA *ap_data, unsigned int a_count)
 {
     printf("-----------------------------------------------------------------------\n");
-    printf(" 학번    이름    국어  영어  수학  과학  윤리  총점  평균   석차\n");
+    printf(" 학번    이름    국어  영어  수학  과학  윤리  총점  평균\n");
     printf("-----------------------------------------------------------------------\n");
- 
+ 	
     unsigned int sum = 0; // 학급 전체 평균을 계산하기 위해
-    unsigned int i = 0; 
-       
-	for(i = 0; i < a_count; i++, ap_data++)
-	{
+    unsigned int rank,  i = 0, j = 0; 
+    
+	 			
+   	for(i = 0; i < a_count; i++, ap_data++)
+	{		
+		for_var[i] = ap_data->total;
+		for_rank[i].total = ap_data->total;	
         // 학생별로 성적을 출력한다.
-        printf("  %-4u  %5s   %3u   %3u   %3u   %3u   %3u   %3u   %3u   %3d\n", 
+        printf("  %-4u  %5s   %3u   %3u   %3u   %3u   %3u   %3u   %3u\n", 
             ap_data->num, ap_data->name, ap_data->kor, ap_data->eng, ap_data->math, 
-            ap_data->sci, ap_data->eth, ap_data->total, ((ap_data->total)/5), ap_data->rank);
-        sum += ap_data->total; // 학생의 총점을 합산한다.
-    	
-		mean = sum / a_count;
-    	Ssum += ((ap_data->total/5) - mean)*((ap_data->total/5)- mean);
-    	var= sum/9;    
-    }
-             	
+            ap_data->sci, ap_data->eth, ap_data->total, ((ap_data->total)/5));
+        
+		sum += ap_data->total; // 학생의 총점을 합산한다.
+	}
+	printf("-----------------------------------------------------------------------\n");
+	printf(" 석차		\n");
+	printf("-----------------------------------------------------------------------\n");
+     	for(i = 0; i < a_count; i++)
+    	{
+    		rank = 1;
+    		for(j = 0; j < a_count; j++)
+    		{
+    			if(for_rank[i].total < for_rank[j].total)
+    			rank++;
+    		}		
+    		for_rank[i].rank = rank;
+    		printf("%2d번 학생 : %2d   등\n", i+1, for_rank[i].rank);
+ 		}	    
+ 		
+
+  
+     for(i = 0; i < 10; i++)
+    {
+    	sum2 += for_var[i];
+	}
+	
+	mean = sum2 / 10;
+    
+	  for(i = 0; i < 10; i++)
+    {
+    	Ssum += (for_var[i] - mean)*(for_var[i] - mean);
+	}
+    
+    var = Ssum/10;
+ 
     printf("-----------------------------------------------------------------------\n");
-    printf("	분산 : %.2lf  표준편차 : %.2lf\n", var, sqrt(var));
+    printf(" 분산     : %.2lf\n 표준편차 : %.2lf\n", var, sqrt(var));
     printf("-----------------------------------------------------------------------\n");
-    // 읽어들인 정보가 1명 이상인 경우에는 인원수와 전체 평균을 출력한다.
+    // 읽어들인 정보가 1명 이상인 경우에는 인원수와 전체 평균을 출력한다.			
 }
 
 void SaveData(const char *ap_file_name, S_DATA *ap_data, unsigned int a_count)
@@ -135,11 +174,11 @@ void SaveData(const char *ap_file_name, S_DATA *ap_data, unsigned int a_count)
 		{
             fprintf(p_file, "%-4d,%5s,%3u,%3u,%3u,%3u,%3u,%3u,%3u,%3u\n", ap_data->num, ap_data->name, 
         ap_data->kor, ap_data->eng, ap_data->math, ap_data->sci, ap_data->eth, ap_data->total,
-		((ap_data->total)/5), ap_data->rank);
+		((ap_data->total)/5), for_rank[i].rank);
         }
     
 		fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
-    	fprintf(p_file, "  분산 : %.2lf    표준편차 : %.2lf\n", var, sqrt(var));
+    	fprintf(p_file, " 분산 : %.2lf\n 표준편차 : %.2lf\n", var, sqrt(var));
       	fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
         fclose(p_file);  // 파일을 닫는다.
     }
