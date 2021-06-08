@@ -123,7 +123,7 @@ void ShowData(S_DATA *ap_data, unsigned int a_count)
 		sum += ap_data->total; // 학생의 총점을 합산한다.
 	}
 	printf("-----------------------------------------------------------------------\n");
-	printf(" 석차		\n");
+	printf(" ↓↓ 석차 ↓↓		\n");
 	printf("-----------------------------------------------------------------------\n");
      	for(i = 0; i < a_count; i++)
     	{
@@ -134,7 +134,7 @@ void ShowData(S_DATA *ap_data, unsigned int a_count)
     			rank++;
     		}		
     		for_rank[i].rank = rank;
-    		printf("%2d번 학생 : %2d   등\n", i+1, for_rank[i].rank);
+    		printf("%2d번 학생 : %2d   등 \n", i+1, for_rank[i].rank);
  		}	    
  		
 
