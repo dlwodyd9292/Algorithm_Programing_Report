@@ -10,18 +10,20 @@ typedef struct StudentData  // 학생 1명의 정보를 저장할 구조체 선�
     int num;  // 학번
     char name[MAX_NAME_LEN];  // 이름
     unsigned int kor, eng, math; 
- 	unsigned int sci, eth;// 국어, 영어, 수학, 과학, 윤리, 총점, 평균, 석차 
+ 	unsigned int sci, eth;
+	 // 국어, 영어, 수학, 과학, 윤리, 총점, 평균, 석차 
 	unsigned int total, rank;
+	// 총점, 순위 
 } S_DATA;
  
-struct rank
+struct rank // 석차를 구하기 위한 구조체 선언 
 {
 	int total;
 	int rank;
-} for_rank[10];
+} for_rank[10]; 
  
 static double var_sum = 0, sum2 = 0, Ssum = 0, mean, var;
-int for_var[10];
+int for_var[10]; // 분산을 구하기 위한 배열 
  
 // ap_src_str 문자열에서 a_delimiter 또는 NULL 문자가 나올때까지 ap_buffer 메모리에
 // 문자열을 복사한다. 예를들어, ap_src_str에 "abc,def"라고 들어있고 a_delimiter에
@@ -113,8 +115,8 @@ void ShowData(S_DATA *ap_data, unsigned int a_count)
 	 			
    	for(i = 0; i < a_count; i++, ap_data++)
 	{		
-		for_var[i] = ap_data->total;
-		for_rank[i].total = ap_data->total;	
+		for_var[i] = ap_data->total; //분산을 구하기 위해 배열 for_var[i]에 총점을 더한다  
+		for_rank[i].total = ap_data->total; //랭크를  구하기 위해 배열 for_rank[i]에 총점을 더한다	
         // 학생별로 성적을 출력한다.
         printf("  %-4u  %5s   %3u   %3u   %3u   %3u   %3u   %3u   %3u\n", 
             ap_data->num, ap_data->name, ap_data->kor, ap_data->eng, ap_data->math, 
@@ -125,7 +127,8 @@ void ShowData(S_DATA *ap_data, unsigned int a_count)
 	printf("-----------------------------------------------------------------------\n");
 	printf(" ↓↓ 석차 ↓↓		\n");
 	printf("-----------------------------------------------------------------------\n");
-     	for(i = 0; i < a_count; i++)
+     	
+		 for(i = 0; i < a_count; i++) // 석차를 구하기 위한 for문 
     	{
     		rank = 1;
     		for(j = 0; j < a_count; j++)
@@ -139,19 +142,19 @@ void ShowData(S_DATA *ap_data, unsigned int a_count)
  		
 
   
-     for(i = 0; i < 10; i++)
+     for(i = 0; i < 10; i++) // 분산을 구하기 위해 저장해놓은 total 값을 모두 더한다 
     {
     	sum2 += for_var[i];
 	}
 	
-	mean = sum2 / 10;
+	mean = sum2 / 10; // 평균을 구하여 mean 값에 저장 
     
 	  for(i = 0; i < 10; i++)
     {
-    	Ssum += (for_var[i] - mean)*(for_var[i] - mean);
+    	Ssum += (for_var[i] - mean)*(for_var[i] - mean); //분산을 구하기 위한 for 문 
 	}
     
-    var = Ssum/10;
+    var = Ssum/10; // 분산 계산, 표쥰편차는 이 값에 sprt 함수를 씌워서 printf에서 실행 
  
     printf("-----------------------------------------------------------------------\n");
     printf(" ※ 분산     : %.2lf\n ※ 표준편차 : %.2lf\n", var, sqrt(var));
@@ -199,14 +202,6 @@ int main()
      	 ShowData(data, data_count);
     	 SaveData("Trans.csv", data, data_count);
 	}
-	
-	if (ReadData("sungjuk.txt", data, &data_count))
-	{	
-		 printf("\n\n [   OPEN sungjuk.txt   ] \n\n");
-		 ShowData(data, data_count);
-    	 SaveData("Trans.txt", data, data_count);
-	}
-
 
     return 0;
 }
