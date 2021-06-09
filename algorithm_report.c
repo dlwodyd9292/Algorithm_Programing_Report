@@ -154,7 +154,7 @@ void ShowData(S_DATA *ap_data, unsigned int a_count)
     	Ssum += (for_var[i] - mean)*(for_var[i] - mean); //분산을 구하기 위한 for 문 
 	}
     
-    var = Ssum/10; // 분산 계산, 표쥰편차는 이 값에 sprt 함수를 씌워서 printf에서 실행 
+    var = Ssum/10; // 분산 계산, 표쥰편차는 이 값에 sprt 함수를 씌워서 printf에 
  
     printf("-----------------------------------------------------------------------\n");
     printf(" ※ 분산     : %.2lf\n ※ 표준편차 : %.2lf\n", var, sqrt(var));
@@ -185,7 +185,8 @@ void SaveData(const char *ap_file_name, S_DATA *ap_data, unsigned int a_count)
       	fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
         fclose(p_file);  // 파일을 닫는다.
     }
-    printf("\n\n%s 파일에 데이터를 저장했습니다!\n", ap_file_name);
+    printf("\n\t%s 파일에 데이터를 저장했습니다!    \n", ap_file_name);
+    printf("\n-----------------------------------------------------------------------\n");
 }
  
 int main()
@@ -198,7 +199,7 @@ int main()
     
     if (ReadData("sungjuk.csv", data, &data_count))
     { 	
-    	 printf("\n\n [   OPEN sungjuk.csv   ] \n\n");
+    	 printf("\n \t\t[   OPEN sungjuk.csv   ] \n\n");
      	 ShowData(data, data_count);
     	 SaveData("Trans.csv", data, data_count);
 	}
