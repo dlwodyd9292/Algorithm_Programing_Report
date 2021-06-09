@@ -1,8 +1,15 @@
-#include <stdio.h>  // printf, fopen_s, fgets, fclose 함수를 사용하기 위해!
-#include <stdlib.h> // atoi 함수를 사용하기 위해!
-#include <math.h> // 수학 관련 함수 
+/*
+참고t사이트  : https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=tipsware&logNo=221679540027
+
+2021-06-09 writen by Lee Jae-Yong
  
-#define MAX_COUNT     100   // 관리할 최대 학생 수!
+*/
+
+#include <stdio.h>  // printf, fopen_s, fgets, fclose 함수를 사용하기 위해
+#include <stdlib.h> // atoi 함수를 사용하기 위해
+#include <math.h> // 수학 관련 함수를 사용하기 위해 
+ 
+#define MAX_COUNT     100   // 관리할 최대 학생 수
 #define MAX_NAME_LEN  16    // 이름의 최대 길이
  
 typedef struct StudentData  // 학생 1명의 정보를 저장할 구조체 선언
@@ -183,6 +190,7 @@ void SaveData(const char *ap_file_name, S_DATA *ap_data, unsigned int a_count)
 		fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
     	fprintf(p_file, " ※ 분산       :   %.2lf\n ※ 표준편차 :   %.2lf\n", var, sqrt(var));
       	fprintf(p_file, "-----------------------------------------------------------------------------------------------------------------------------\n");
+      	fprintf(p_file, " Written By Lee Jae-Yong\n");
         fclose(p_file);  // 파일을 닫는다.
     }
     printf("\n\t%s 파일에 데이터를 저장했습니다!    \n", ap_file_name);
@@ -199,7 +207,7 @@ int main()
     
     if (ReadData("sungjuk.csv", data, &data_count))
     { 	
-    	 printf("\n \t\t[   OPEN sungjuk.csv   ] \n\n");
+    	 printf("\n \t\t[   OPEN sungjuk.csv   ] \tWritten By Lee Jae-Yong\n\n");
      	 ShowData(data, data_count);
     	 SaveData("Trans.csv", data, data_count);
 	}
